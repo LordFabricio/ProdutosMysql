@@ -1,0 +1,13 @@
+Crie um Schema dbcasa
+
+dentro dele crie a tabela
+
+-- auto-generated definition
+CREATE TABLE produtos
+(
+  id         INT AUTO_INCREMENT
+    PRIMARY KEY,
+  descricao  VARCHAR(30)   NULL,
+  quantidade DOUBLE        NULL,
+  valor_un   DECIMAL(6, 2) NULL
+);
