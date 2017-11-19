@@ -1,0 +1,2 @@
+AbsoluteLayout-SNAPSHOT.jar
+mysql-connector-java-5.1.44.jar
