@@ -25,7 +25,7 @@ public class ConexaoMysql {
     private String server = "localhost:3306"; //Variavel Responsavel pela definição do LocalHost em seu PC.
     private String banco = "dbcasa"; //Nome do Schema do seu Banco de Dados.
     private String usuario = "root"; //Variavel associada a seu usuário de conexão com o servidor de banco de dados.
-    private String senha = ""; //Variavel Associada a sua senha de conexao com o servidor de banco de dados.
+    private String senha = "root"; //Variavel Associada a sua senha de conexao com o servidor de banco de dados.
 
     /**
      * Construtor Vazio.
@@ -55,7 +55,7 @@ public class ConexaoMysql {
     public Connection conectar() {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            String url = "jdbc:mysql://" + server + "/" + banco;
+            String url = "jdbc:mysql://" + server + "/" + banco + "?autoReconnect=true&useSSL=false";
             this.setCon((Connection) DriverManager.getConnection(url, usuario, senha));
             this.status = true;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException e) {

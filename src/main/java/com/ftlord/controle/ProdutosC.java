@@ -51,6 +51,10 @@ public class ProdutosC extends ProdutosDAO{
         return this.alterarP(p);
     }
     
+    public boolean alterarProdutoCupom(Produtos p){
+        return this.alterarProdutoCupom(p);
+    }
+    
     /**
      * Metodo Selecionar um Produto pela ID
      * Realiza a comunicação entre a classe ProdutosDAO e a Produtos

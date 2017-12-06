@@ -33,7 +33,7 @@ public class ProdutosDAO extends ConexaoMysql {
                     + ") VALUES ("
                     + "'" + p.getDescProduto() + "',"
                     + "'" + p.getQuantProduto() + "',"
-                    + "'" + p.getValorProduto() + "'"
+                    + "'" + p.getValorProdutos() + "'"
                     + ");"
             );
         } catch (Exception e) {
@@ -79,7 +79,23 @@ public class ProdutosDAO extends ConexaoMysql {
                     "UPDATE produtos SET "
                     + "descricao = '" + p.getDescProduto() + "',"
                     + "quantidade = '" + p.getQuantProduto() + "',"
-                    + "valor_un = '" + p.getValorProduto() + "'"
+                    + "valor_un = '" + p.getValorProdutos() + "'"
+                    + " WHERE id = '" + p.getIdProduto() + "'"
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            this.desconectar();
+        }
+    }
+    
+    public boolean alterarProdutoCupom(Produtos p){
+        try {
+            this.conectar();
+            return this.executarUpeDel(
+                    "UPDATE produtos SET "
+                    + "quantidade = '" + p.getQuantProduto() + "',"
                     + " WHERE id = '" + p.getIdProduto() + "'"
             );
         } catch (Exception e) {
@@ -113,7 +129,7 @@ public class ProdutosDAO extends ConexaoMysql {
                 p.setIdProduto(this.getResultSet().getInt(1));
                 p.setDescProduto(this.getResultSet().getString(2));
                 p.setQuantProduto(this.getResultSet().getDouble(3));
-                p.setValorProduto(this.getResultSet().getDouble(4));
+                p.setValorProdutos(this.getResultSet().getDouble(4));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,7 +162,7 @@ public class ProdutosDAO extends ConexaoMysql {
                 p.setIdProduto(this.getResultSet().getInt(1));
                 p.setDescProduto(this.getResultSet().getString(2));
                 p.setQuantProduto(this.getResultSet().getDouble(3));
-                p.setValorProduto(this.getResultSet().getDouble(4));
+                p.setValorProdutos(this.getResultSet().getDouble(4));
                 lp.add(p);
             }
         } catch (Exception e) {

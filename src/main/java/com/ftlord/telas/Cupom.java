@@ -5,21 +5,41 @@
  */
 package com.ftlord.telas;
 
+import com.ftlord.controle.CupomVendaC;
 import com.ftlord.controle.ProdutosC;
+import com.ftlord.controle.VendasC;
+import com.ftlord.model.CupomVenda;
 import com.ftlord.model.Produtos;
+import com.ftlord.model.Vendas;
 import java.awt.event.KeyEvent;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author LordFabricio
  */
-public class Cupom extends javax.swing.JFrame{
-    
-    Produtos p;
-    ProdutosC controleP;
-    Integer linha;
-    
+public class Cupom extends javax.swing.JFrame {
+
+    private Produtos p;
+    private ProdutosC controleP;
+    private Integer linha;
+    private Integer remov;
+    private double acumulaT;
+    private double troco;
+    private double valorU;
+    private double calc;
+    private double quantidade;
+    private double valorP;
+    private double quantAnterior;
+    private DefaultTableModel model;
+    private Vendas vendas = new Vendas();
+    private VendasC vendasc = new VendasC();
+    private CupomVenda cupomv = new CupomVenda();
+    private CupomVendaC cupomvc = new CupomVendaC();
+
     /**
      * Creates new form Cupom
      */
@@ -27,6 +47,13 @@ public class Cupom extends javax.swing.JFrame{
         this.p = prod;
         this.controleP = prodC;
         linha = 0;
+        remov = 0;
+        acumulaT = 0;
+        troco = 0;
+        valorU = 0;
+        calc = 0;
+        quantidade = 0;
+        valorP = 0;
         initComponents();
     }
 
@@ -59,8 +86,8 @@ public class Cupom extends javax.swing.JFrame{
         setPreferredSize(new java.awt.Dimension(900, 580));
         setSize(new java.awt.Dimension(900, 580));
         addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
             }
         });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -83,6 +110,11 @@ public class Cupom extends javax.swing.JFrame{
                 return canEdit [columnIndex];
             }
         });
+        cupom.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cupomMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(cupom);
         if (cupom.getColumnModel().getColumnCount() > 0) {
             cupom.getColumnModel().getColumn(0).setResizable(false);
@@ -101,7 +133,7 @@ public class Cupom extends javax.swing.JFrame{
         getContentPane().add(valorTrocoC, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 440, 100, -1));
 
         valorTrocoT.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
-        valorTrocoT.setText("Valor Pago");
+        valorTrocoT.setText("Troco");
         getContentPane().add(valorTrocoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 450, -1, -1));
 
         valorPagoT.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
@@ -109,6 +141,11 @@ public class Cupom extends javax.swing.JFrame{
         getContentPane().add(valorPagoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 390, -1, -1));
 
         valorPagoC.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
+        valorPagoC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                valorPagoCKeyReleased(evt);
+            }
+        });
         getContentPane().add(valorPagoC, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 380, 100, -1));
 
         valorC.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
@@ -135,53 +172,265 @@ public class Cupom extends javax.swing.JFrame{
         getContentPane().add(codigoT, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 120, -1, -1));
 
         codigoC.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        codigoC.setText("CÓDIGO");
         codigoC.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 codigoCKeyReleased(evt);
             }
         });
-        getContentPane().add(codigoC, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 160, -1, -1));
+        getContentPane().add(codigoC, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 160, 50, -1));
 
         concluir.setText("Concluir");
+        concluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                concluirActionPerformed(evt);
+            }
+        });
         getContentPane().add(concluir, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 490, 100, 30));
 
         remover.setText("Remover Item");
+        remover.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removerActionPerformed(evt);
+            }
+        });
         getContentPane().add(remover, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 20, -1, -1));
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-       // TODO add your handling code here:
-    }//GEN-LAST:event_formWindowClosed
-
     private void codigoCKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_codigoCKeyReleased
         if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
-            p = controleP.pegaPC(Integer.parseInt(codigoC.getText()));
-            DefaultTableModel model = (DefaultTableModel) cupom.getModel();
-            String id = String.valueOf(p.getIdProduto());
-            String desc = p.getDescProduto();
-            String quant = "";
-            String val = String.valueOf(p.getValorProduto());
-            model.addRow(new Object[]{id, desc, quant, val});
+            Integer linhaid = procuraProdutoID(Integer.parseInt(codigoC.getText()));
+            if (linhaid != -1) {
+
+            } else {
+                puxaProduto();
+            }
         }
     }//GEN-LAST:event_codigoCKeyReleased
 
     private void quantidadeCKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_quantidadeCKeyReleased
         if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
-            DefaultTableModel model = (DefaultTableModel) cupom.getModel();
-            String id = String.valueOf(p.getIdProduto());
-            String desc = p.getDescProduto();
-            String quant = quantidadeC.getText();
-            String val = String.valueOf(p.getValorProduto());
-            model.setValueAt(quant, linha, 2);
-            linha++;
+            produtoLinhaCerta();
         }
     }//GEN-LAST:event_quantidadeCKeyReleased
+
+    private void removerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerActionPerformed
+        if (remov != -1) {
+            try {
+                removeProduto();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Selecione Um Registro", "Aviso", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecione um Produto", "ATENÇÃO", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_removerActionPerformed
+
+    private void cupomMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cupomMouseClicked
+        remov = this.cupom.getSelectedRow();
+    }//GEN-LAST:event_cupomMouseClicked
+
+    private void valorPagoCKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_valorPagoCKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER || evt.getKeyCode() == KeyEvent.VK_TAB) {
+            trocoCupom();
+        }
+    }//GEN-LAST:event_valorPagoCKeyReleased
+
+    private void concluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_concluirActionPerformed
+        if (salvarCupom() > 0 && salvarVendaCupom() > 0) {
+            zeraTudo();
+            JOptionPane.showMessageDialog(this, "Cupom Registrado com Sucesso!!!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Erro... no Cupom", "ATENÇÃO", JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_concluirActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        Principal principal = new Principal();
+        principal.atualizaTabela();
+        principal.setVisible(true);
+    }//GEN-LAST:event_formWindowClosing
+
+    private void puxaProduto() {
+        p = controleP.pegaPC(Integer.parseInt(codigoC.getText()));
+        quantAnterior = p.getQuantProduto();
+        model = (DefaultTableModel) cupom.getModel();
+        String id = String.valueOf(p.getIdProduto());
+        String desc = p.getDescProduto();
+        valorU = p.getValorProdutos();
+        String quant = "";
+        String val = String.valueOf(p.getValorProdutos());
+        model.addRow(new Object[]{id, desc, quant, val});
+    }
+
+    private void produtoLinhaCerta() {
+        double quant1;
+        double quant2;
+        double vTotal;
+        double vQuant;
+        double vUnit;
+        double mTotal;
+        double mUnit;
+        Integer somaquant;
+        Integer linhaid = procuraProdutoID(Integer.parseInt(codigoC.getText()));
+        if (linhaid != -1) {
+            if ("".equals(cupom.getValueAt(linhaid, 2).toString())) {
+                quant1 = 0;
+            } else {
+                quant1 = Double.parseDouble(cupom.getValueAt(linhaid, 2).toString());
+                mUnit = Double.parseDouble(cupom.getValueAt(linhaid, 3).toString());
+                mTotal = quant1 * mUnit;
+                acumulaT = acumulaT - mTotal;
+            }
+            quant2 = Double.parseDouble(quantidadeC.getText());
+            somaquant = (int) (quant1 + quant2);
+            cupom.setValueAt(somaquant, linhaid, 2);
+        }
+        vQuant = Double.parseDouble(cupom.getValueAt(linhaid, 2).toString());
+        vUnit = Double.parseDouble(cupom.getValueAt(linhaid, 3).toString());
+        vTotal = vQuant * vUnit;
+        acumulaT = acumulaT + vTotal;
+        valorC.setText(String.valueOf(acumulaT));
+    }
+
+    private void trocoCupom() {
+        valorP = Double.parseDouble(valorPagoC.getText());
+        troco = acumulaT - valorP;
+        if (troco < 0) {
+            troco = troco * -1;
+            valorTrocoC.setText(String.valueOf(troco));
+        } else {
+            valorTrocoC.setText(String.valueOf(troco));
+        }
+    }
+
+    private Integer salvarCupom() {
+        Integer i;
+        Integer u = 1 + vendasc.ultimoR();
+        cupomVenda();
+        if (vendasc.salvarVC(vendas) > 0) {
+            cupomv.setIdCupom(u);
+            i = 1;
+            return i;
+        } else {
+            i = 0;
+            return i;
+        }
+    }
+
+    private Integer salvarVendaCupom() {
+        Integer i = 0;
+        Integer tamanho;
+        tamanho = cupom.getRowCount();
+        for (int j = 0; j < tamanho; j++) {
+            cupomProdutos(j);
+            alterarProduto(j);
+            if (i != tamanho) {
+                if (cupomvc.salvarCV(cupomv) > 0) {
+                    i++;
+                }
+            }
+        }
+        return tamanho - i;
+    }
+
+    private void removeProduto() {
+        String quant2 = model.getValueAt(remov, 2).toString();
+        String valor = model.getValueAt(remov, 3).toString();
+        quantidade = Double.parseDouble(quant2);
+        valorU = Double.parseDouble(valor);
+        calc = quantidade * valorU;
+        acumulaT = acumulaT - calc;
+        valorC.setText(String.valueOf(acumulaT));
+        linha--;
+        model.removeRow(remov);
+    }
+
+    private void limpaTabela() {
+        linha = cupom.getRowCount();
+        for (int i = linha; i > 0; i--) {
+            model.removeRow(i - 1);
+        }
+    }
+
+    private LocalDate dataS() {
+        LocalDate data;
+        data = LocalDate.now();
+        return data;
+    }
+
+    private LocalTime horaS() {
+        LocalTime hora;
+        hora = LocalTime.now();
+        return hora;
+    }
+
+    private void zeraTudo() {
+        limpaTabela();
+        linha = 0;
+        remov = 0;
+        acumulaT = 0;
+        troco = 0;
+        valorU = 0;
+        calc = 0;
+        quantidade = 0;
+        valorP = 0;
+        codigoC.setText("");
+        quantidadeC.setText("");
+        valorC.setText("");
+        valorPagoC.setText("");
+        valorTrocoC.setText("");
+    }
+
+    private void cupomVenda() {
+        vendas.setValorBruto(Double.parseDouble(valorC.getText()));
+        vendas.setValorPago(Double.parseDouble(this.valorPagoC.getText()));
+        vendas.setValorTroco(Double.parseDouble(this.valorTrocoC.getText()));
+        vendas.setData(dataS());
+        vendas.setHora(horaS());
+    }
+
+    private void cupomProdutos(Integer linha) {
+        double unidade1;
+        double valor1;
+        double calculo1;
+        cupomv.setIdProduto(Integer.parseInt(model.getValueAt(linha, 0).toString()));
+        cupomv.setQuantidade(Double.parseDouble(model.getValueAt(linha, 2).toString()));
+        cupomv.setValorU(Double.parseDouble(model.getValueAt(linha, 3).toString()));
+        unidade1 = cupomv.getQuantidade();
+        valor1 = cupomv.getValorU();
+        calculo1 = unidade1 * valor1;
+        cupomv.setValorT(calculo1);
+    }
+
+    private Integer procuraProdutoID(Integer id) {
+        Integer tamanho;
+        Integer verifica = 0;
+        Integer linhaid = -1;
+        tamanho = cupom.getRowCount();
+        if (tamanho > 0) {
+            for (int i = 0; tamanho > i; i++) {
+                verifica = Integer.parseInt(cupom.getValueAt(i, 0).toString());
+                if (verifica == id) {
+                    linhaid = i;
+                }
+            }
+        }
+        return linhaid;
+    }
     
-    
+    private void alterarProduto(Integer linhaid) {
+        double testeSoma;
+        double testeQuant;
+        p = controleP.pegaPC(Integer.parseInt(this.cupom.getValueAt(linhaid, 0).toString()));
+        quantAnterior = p.getQuantProduto();
+        testeQuant = Double.parseDouble(this.cupom.getValueAt(linhaid, 2).toString());
+        testeSoma = quantAnterior - testeQuant;
+        p.setQuantProduto(testeSoma);
+        controleP.alterarPC(p);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField codigoC;

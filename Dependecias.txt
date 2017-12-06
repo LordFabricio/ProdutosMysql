@@ -1,2 +1,7 @@
+Baixei destes Links
+
 AbsoluteLayout-SNAPSHOT.jar
+https://github.com/DIVERSIFY-project/EVOSERV/blob/master/lib/unknown/binary/AbsoluteLayout/SNAPSHOT/AbsoluteLayout-SNAPSHOT.jar
+
 mysql-connector-java-5.1.44.jar
+http://central.maven.org/maven2/mysql/mysql-connector-java/5.1.44/mysql-connector-java-5.1.44.jar

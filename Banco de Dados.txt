@@ -1,13 +1,45 @@
-Crie um Schema dbcasa
+-- ------------------------------------------------------------------
+-- Use o comando abaixo para zerar o AUTO_INCREMENT da tabela cupom
+-- ALTER TABLE dbcasa.cupom AUTO_INCREMENT = 1;
+-- ------------------------------------------------------------------
 
-dentro dele crie a tabela
+CREATE SCHEMA IF NOT EXISTS `dbcasa` ;
+USE `dbcasa` ;
 
--- auto-generated definition
-CREATE TABLE produtos
-(
-  id         INT AUTO_INCREMENT
-    PRIMARY KEY,
-  descricao  VARCHAR(30)   NULL,
-  quantidade DOUBLE        NULL,
-  valor_un   DECIMAL(6, 2) NULL
-);
+CREATE TABLE IF NOT EXISTS `dbcasa`.`produtos` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(30) NOT NULL,
+  `quantidade` DOUBLE NOT NULL,
+  `valor_un` DECIMAL(6,2) NOT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE IF NOT EXISTS `dbcasa`.`cupom` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `data` DATE NOT NULL,
+  `hora` TIME NOT NULL,
+  `cnpj` VARCHAR(14) NULL,
+  `cpf` VARCHAR(11) NULL,
+  `valor_bruto` DECIMAL(6,2) NOT NULL,
+  `valor_pago` DECIMAL(6,2) NOT NULL,
+  `valor_troco` DECIMAL(6,2) NOT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE IF NOT EXISTS `dbcasa`.`cupom_venda` (
+  `cupom_id` INT NOT NULL,
+  `produtos_id` INT NOT NULL,
+  `quantidade` DOUBLE NOT NULL,
+  `valor_u` DECIMAL(6,2) NOT NULL,
+  `valor_t` DECIMAL(6,2) NOT NULL,
+  PRIMARY KEY (`cupom_id`, `produtos_id`),
+  INDEX `fk_cupom_has_produtos_produtos1_idx` (`produtos_id` ASC),
+  INDEX `fk_cupom_has_produtos_cupom_idx` (`cupom_id` ASC),
+  CONSTRAINT `fk_cupom_has_produtos_cupom`
+    FOREIGN KEY (`cupom_id`)
+    REFERENCES `dbcasa`.`cupom` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cupom_has_produtos_produtos1`
+    FOREIGN KEY (`produtos_id`)
+    REFERENCES `dbcasa`.`produtos` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);

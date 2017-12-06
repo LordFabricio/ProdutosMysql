@@ -16,18 +16,25 @@ public class Produtos {
     private int idProduto;
     private String descProduto;
     private Double quantProduto;
-    private Double valorProduto;
+    private Double valorProdutos;
 
     public Produtos() {
     }
 
+    public Produtos(int idProduto, String descProduto, Double quantProduto, Double valorUnitario) {
+        this.idProduto = idProduto;
+        this.descProduto = descProduto;
+        this.quantProduto = quantProduto;
+        this.valorProdutos = valorUnitario;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 3;
         hash = 17 * hash + this.idProduto;
         hash = 17 * hash + Objects.hashCode(this.descProduto);
         hash = 17 * hash + Objects.hashCode(this.quantProduto);
-        hash = 17 * hash + Objects.hashCode(this.valorProduto);
+        hash = 17 * hash + Objects.hashCode(this.valorProdutos);
         return hash;
     }
 
@@ -52,7 +59,7 @@ public class Produtos {
         if (!Objects.equals(this.quantProduto, other.quantProduto)) {
             return false;
         }
-        if (!Objects.equals(this.valorProduto, other.valorProduto)) {
+        if (!Objects.equals(this.valorProdutos, other.valorProdutos)) {
             return false;
         }
         return true;
@@ -82,17 +89,18 @@ public class Produtos {
         this.quantProduto = quantProduto;
     }
 
-    public Double getValorProduto() {
-        return valorProduto;
+    public Double getValorProdutos() {
+        return valorProdutos;
     }
 
-    public void setValorProduto(Double valorProduto) {
-        this.valorProduto = valorProduto;
+    public void setValorProdutos(Double valorProdutos) {
+        this.valorProdutos = valorProdutos;
     }
+    
 
     @Override
     public String toString() {
-        return "Produtos{" + "idProduto=" + idProduto + ", descProduto=" + descProduto + ", quantProduto=" + quantProduto + ", valorProduto=" + valorProduto + '}';
+        return "Produtos{" + "idProduto=" + idProduto + ", descProduto=" + descProduto + ", quantProduto=" + quantProduto + ", valorProduto=" + valorProdutos + '}';
     }
     
 }

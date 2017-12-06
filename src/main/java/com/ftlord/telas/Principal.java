@@ -40,7 +40,7 @@ public class Principal extends javax.swing.JFrame {
      */
     public Principal() {
         initComponents();
-        carregaP();
+        atualizaTabela();
         setLocationRelativeTo(null);
         edicaoAreaCad(false);
         salva.setEnabled(false);
@@ -84,7 +84,7 @@ public class Principal extends javax.swing.JFrame {
         usuarioC = new javax.swing.JTextField();
         confirma = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         setSize(new java.awt.Dimension(900, 580));
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -282,11 +282,15 @@ public class Principal extends javax.swing.JFrame {
         if (salvarAlterar.equals("salvar")) {
             this.salvarP();
             salvarAlterar = "limpo";
+            salva.setEnabled(false);
+            cancela.setEnabled(false);
+            novo.setEnabled(true);
         } else if (salvarAlterar.equals("alterar")) {
             this.alterarP();
+            salva.setEnabled(false);
+            cancela.setEnabled(false);
+            novo.setEnabled(true);
             salvarAlterar = "limpo";
-        } else if (salvarAlterar.equals("limpo")) {
-            JOptionPane.showMessageDialog(this, "Adicione ou Altere um Produto Antes", "ATENÇÃO", JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_salvaActionPerformed
 
@@ -295,7 +299,7 @@ public class Principal extends javax.swing.JFrame {
         if (linha >= 0) {
             int id = (int) this.tabela.getValueAt(linha, 0);
             if (controleP.escluirPC(id)) {
-                this.carregaP();
+                this.atualizaTabela();
                 limpaAreaCad();
                 edicaoAreaCad(false);
                 JOptionPane.showMessageDialog(this, "Produto Excluido com Sucesso!!!");
@@ -352,7 +356,7 @@ public class Principal extends javax.swing.JFrame {
             cancela.setEnabled(true);
             this.descC.setText(p.getDescProduto());
             this.quantC.setText(String.valueOf(p.getQuantProduto()));
-            this.valorC.setText(String.valueOf(p.getValorProduto()));
+            this.valorC.setText(String.valueOf(p.getValorProdutos()));
             this.descC.selectAll();
             this.descC.requestFocus();
             try {
@@ -360,7 +364,7 @@ public class Principal extends javax.swing.JFrame {
                 p = controleP.pegaPC(id);
                 this.descC.setText(p.getDescProduto());
                 this.quantC.setText(String.valueOf(p.getQuantProduto()));
-                this.valorC.setText(String.valueOf(p.getValorProduto()));
+                this.valorC.setText(String.valueOf(p.getValorProdutos()));
                 imagem.setIcon(a.pegaImagem(file = descC.getText()));
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Selecione Um Registro", "Aviso", JOptionPane.ERROR_MESSAGE);
@@ -432,8 +436,8 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         controleP.pegaPC(11);
-        System.out.println(p.getDescProduto());
         Cupom c = new Cupom(p, controleP);
+        this.setVisible(false);
         c.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -493,9 +497,9 @@ public class Principal extends javax.swing.JFrame {
     private void salvarP() {
         p.setDescProduto(this.descC.getText());
         p.setQuantProduto(Double.parseDouble(this.quantC.getText()));
-        p.setValorProduto(Double.parseDouble(this.valorC.getText()));
+        p.setValorProdutos(Double.parseDouble(this.valorC.getText()));
         if (controleP.salvarPC(p) > 0) {
-            this.carregaP();
+            this.atualizaTabela();
             limpaAreaCad();
             edicaoAreaCad(false);
             imagem.setIcon(null);
@@ -511,9 +515,9 @@ public class Principal extends javax.swing.JFrame {
     private void alterarP() {
         p.setDescProduto(this.descC.getText());
         p.setQuantProduto(Double.parseDouble(this.quantC.getText()));
-        p.setValorProduto(Double.parseDouble(this.valorC.getText()));
+        p.setValorProdutos(Double.parseDouble(this.valorC.getText()));
         if (controleP.alterarPC(p)) {
-            this.carregaP();
+            this.atualizaTabela();
             limpaAreaCad();
             edicaoAreaCad(false);
             imagem.setIcon(null);
@@ -526,7 +530,7 @@ public class Principal extends javax.swing.JFrame {
     /**
      * Metodo que Ordena Carreagar em uma LISTA os Produtos do Banco de Dados
      */
-    private void carregaP() {
+    public void atualizaTabela() {
         listaProdutos = controleP.listaPC();
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
         modelo.setNumRows(0);
@@ -536,7 +540,7 @@ public class Principal extends javax.swing.JFrame {
                 listaProdutos.get(i).getIdProduto(),
                 listaProdutos.get(i).getDescProduto(),
                 listaProdutos.get(i).getQuantProduto(),
-                listaProdutos.get(i).getValorProduto()
+                listaProdutos.get(i).getValorProdutos()
             });
         }
     }
